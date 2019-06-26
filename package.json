@@ -1,6 +1,6 @@
 {
   "name": "ragemp-better-bindings",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Better keybindings in ragemp",
   "main": "index.js",
   "scripts": {
