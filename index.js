@@ -9,7 +9,6 @@ class BetterBinding {
         Keys['ctrl'],
         Keys['alt'],
         Keys['shift'],
-        Keys['a'],
     ];
   }
 
@@ -33,6 +32,7 @@ class BetterBinding {
 
 
   bind(keys, handler, onUp) {
+    keys = keys.toLowerCase();
     let modifiers = keys.split(/\+/);
     let key = modifiers.pop();
 
@@ -73,6 +73,7 @@ class BetterBinding {
   }
 
   unbind(keys, handler) {
+    keys = keys.toLowerCase();
     let bind = this.binds[keys];
     if(bind) {
       let indexToDelete = bind.handlers.indexOf(handler);
