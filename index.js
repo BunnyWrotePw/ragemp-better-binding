@@ -116,6 +116,6 @@ class BetterBinding {
 
 }
 
-const keyBinder = new KeyBinder();
+const betterBinding = new BetterBinding();
 
-exports = keyBinder;
+exports = betterBinding;
