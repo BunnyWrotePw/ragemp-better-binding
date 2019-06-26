@@ -118,4 +118,5 @@ class BetterBinding {
 
 const betterBinding = new BetterBinding();
 
-exports = betterBinding;
+module.exports = betterBinding;
+module.exports.Keys = Keys;

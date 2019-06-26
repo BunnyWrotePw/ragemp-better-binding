@@ -69,7 +69,7 @@ for(let i = 0; i <= 9; i++)
 
 let KeysMap = flipObject(Keys);
 
-exports = {
+module.exports = {
   Keys,
   KeysMap,
 };
