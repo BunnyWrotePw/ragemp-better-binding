@@ -1,54 +1,111 @@
-# Better Bindings for RageMP
+<h1 align="center">
+  RageMP: Better Bindings
+</h1>
 
-A small module that helps you to manage keybinds
+<h4 align="center">
+  Fast and easy bindings in RageMP
+</h4>
 
-## Installation
+## Contents
+
+- [Install](#install)
+- [Usage](#usage)
+- [API](#api)
+
+## Install
+
+### Yarn
 
 ```bash
-npm install ragemp-better-bindings --save
-// or
-yarn ragemp-better-bindings --save
+yarn add ragemp-better-bindings
+```
+
+### NPM
+
+```bash
+npm install ragemp-better-bindings
 ```
 
 ## Usage
 
-You can easily create keybinds like 'ctrl+a' (modifier+key).
-
-For a combination like 'a+b' you need to add a modifier to the modifier-array.
-
-For the whole key-list take a look into the file 'Keys.js'
+### Binding
 
 ```js
-import keyBinder from 'ragemp-better-bindings';
+import KeyBinder from 'ragemp-better-bindings';
 
-keyBinder.modifiers.push(keyBinder.Keys['a']);
+// Binding a key (on key down)
+KeyBinder.bind('g', () => {
+  mp.gui.chat.push("Key 'g'");
+});
+
+// Binding a key (on key up)
+KeyBinder.bind('g', () => {
+  mp.gui.chat.push("Key 'g' [released]");
+}, true);
+
+// Binding multiple keys 
+KeyBinder.bind('ctrl+g', () => {
+  mp.gui.chat.push("Key 'ctrl' + 'g'");
+}, true);
 ```
 
-### Bind
+### Unbinding
 
 ```js
-bind(key, handler, onRelease); 
+import BetterBindings from 'ragemp-better-bindings';
+
+// Way 1
+const bindHandler = () => {};
+
+BetterBindings.bind('g', bindHandler);
+BetterBindings.unbind('g', bindHandler);
+
+// Way 2
+const unbinder = BetterBindings.bind('g', () => {});
+unbinder();
 ```
-The third argument is optional. If you pass `true` it will fire the handler on relase.
-This binds dont support multibinds!
+
+### Adding/Removing modifiers
 
 ```js
-import keyBinder from 'ragemp-better-bindings';
+import BetterBindings from 'ragemp-better-bindings';
 
-keyBinder.bind('ctrl+n', () => {
-    mp.gui.chat.push("ctrl+n");
-});
+BetterBindings.removeModifier('ctrl');
+BetterBindings.addModifier('space');
 
-keyBinder.bind('ctrl+b', () => {
-    mp.gui.chat.push("ctrl+b");
-});
-
-keyBinder.bind('ctrl+shift+b', () => {
-    mp.gui.chat.push("ctrl+shift+b");
-});
-
-keyBinder.bind('o', () => {
-    mp.gui.chat.push("o - released");
-}, true); 
-
+BetterBindings.bind('space+g', () => {});
 ```
+
+## API
+
+### bind(key, handler, onRelease): unbinder
+
+Binding a key, or keys. <br>
+If you bind multiple keys the onRelease=true is not supported! <br>
+This method returns a function that unbinds your bind on execution.
+
+- key: string
+    - All keys except the last one have to be modifiers! Default Modifiers: (ctrl, shift, alt)
+- handler: function
+- onRelease?: boolean (Default: false)
+
+### unbind(key, handler)
+
+Unbinding a key, or keys. <br>
+
+- key: string
+- handler: function
+
+### addModifier(key)
+
+Adds a new modifier to the modifier list.
+
+- key: string
+
+### delModifier(key)
+
+Deletes a modifier from the modifier list.
+
+- key: string
+
+

@@ -6,33 +6,32 @@ class BetterBinding {
     this.binds = {};
     this.keyListeners = {};
     this.modifiers = [
-        Keys['ctrl'],
-        Keys['alt'],
-        Keys['shift'],
+      Keys['ctrl'],
+      Keys['alt'],
+      Keys['shift'],
     ];
   }
 
   _handleKeyDown(keyCode) {
     this.pressedKeys[keyCode] = true;
-
-    Object.values(this.binds).filter(b => !b.onUp && (b.modifiers.includes(keyCode) || b.key === keyCode)).forEach(bind => {
-      if((bind.modifiers.length > 0 && bind.modifiers.filter(m => !this.pressedKeys[m]).length === 0 && this.pressedKeys[bind.key]) || bind.modifiers.length === 0) {
-        bind.handlers.filter(h => typeof h === 'function').forEach(h => h());
+    Object.values(this.binds).filter(b => b.modifiers.includes(keyCode) || b.key === keyCode).forEach(bind => {
+      if((bind.modifiers.length > 0 &&bind.modifiers.filter(m => !this.pressedKeys[m]).length === 0 &&this.pressedKeys[bind.key]) || bind.modifiers.length === 0) {
+        bind.handlers.filter(h => !h.onUp).forEach(h => h.handler());
       }
     });
   }
 
   _handleKeyUp(keyCode) {
     delete this.pressedKeys[keyCode];
-
-    Object.values(this.binds).filter(b => b.onUp && b.key === keyCode).forEach(bind => {
-      bind.handlers.filter(h => typeof h === 'function').forEach(h => h());
+    Object.values(this.binds).filter(b => b.key === keyCode).forEach(bind => {
+      bind.handlers.filter(h => h.onUp).forEach(h => h.handler());
     });
   }
 
 
   bind(keys, handler, onUp) {
     keys = keys.toLowerCase();
+    onUp = onUp || false;
     let modifiers = keys.split(/\+/);
     let key = modifiers.pop();
 
@@ -55,15 +54,20 @@ class BetterBinding {
     }
 
     if(this.binds[keys]) {
-      this.binds[keys].handlers.push(handler);
+      this.binds[keys].handlers.push({
+        handler,
+        onUp
+      });
     } else {
       [...modifiers, key].filter(k => !this.keyListeners.hasOwnProperty(k)).forEach(k => this._startKeyListener(k));
 
       this.binds[keys] = {
-        onUp: onUp || false,
         modifiers,
         key,
-        handlers: [handler],
+        handlers: [{
+          handler,
+          onUp
+        }],
       };
     }
 
@@ -115,9 +119,33 @@ class BetterBinding {
     });
   }
 
+  addModifier(key) {
+    if(Keys[key]) {
+      key = Keys[key];
+    } else {
+      throw new Error(`${key} is not a valid key!`);
+    }
+
+    if(!this.modifiers.includes(key)){
+      this.modifiers.push(key);
+    }
+  }
+
+  delModifier(key) {
+    if(Keys[key]) {
+      key = Keys[key];
+    } else {
+      throw new Error(`${key} is not a valid key!`);
+    }
+
+    if(!this.modifiers.indexOf(key) !== -1){
+      this.modifiers.splice(this.modifiers.indexOf(key), 1);
+    }
+  }
+
 }
 
 const betterBinding = new BetterBinding();
 
-module.exports = betterBinding;
+module.exports = module.exports.BetterBindings = betterBinding;
 module.exports.Keys = Keys;
